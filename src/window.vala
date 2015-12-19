@@ -21,6 +21,8 @@ namespace Aond {
     public class Window: Gtk.ApplicationWindow {
 
         public AondApp app;
+        public Gtk.Box box;
+        public Aond.Controls controls;
         public Aond.Viewer viewer;
 
         public Window(AondApp app) {
@@ -28,8 +30,23 @@ namespace Aond {
             this.set_application(this.app);
             this.set_title("Aond Player");
 
+            this.box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            this.add(this.box);
+
+            Gtk.Overlay overlay = new Gtk.Overlay();
+            this.box.pack_start(overlay, true, true, 0);
+
             this.viewer = new Aond.Viewer();
-            this.add(this.viewer);
+            //this.add(this.viewer);
+            overlay.add(this.viewer);
+
+            // this.overlay.add_overlay(play_list)
+            this.controls = new Aond.Controls();
+            this.box.pack_end(this.controls, false, false, 0);
+
+            this.viewer.player_created.connect((player) => {
+                this.controls.set_player(player);
+            });
         }
 
         public void open_filechooser(string? path=null) {
@@ -42,12 +59,7 @@ namespace Aond {
             );
 
             if (chooser.run() == Gtk.ResponseType.ACCEPT) {
-                string file = chooser.get_filename();
-                if (!file.has_suffix("file://")) {
-                    file = "file://" + file;
-                }
-
-				this.viewer.load(file);
+				this.viewer.load(chooser.get_filename());
             }
 
             chooser.destroy();

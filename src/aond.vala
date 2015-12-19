@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 public class AondApp: Gtk.Application {
 
     public GLib.List<Aond.Window> windows;
+    public GLib.File file;
 
-    public AondApp() {
+    public AondApp(string path) {
         GLib.Object(application_id: "org.desktop.aond");
+        this.file = GLib.File.new_for_commandline_arg(path);
     }
 
     protected override void activate() {
@@ -59,7 +61,6 @@ public class AondApp: Gtk.Application {
 
 void main(string[] args) {
     Gst.init(ref args);
-
-    var aond = new AondApp();
+    var aond = new AondApp(args[0]);
     aond.run();
 }

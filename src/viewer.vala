@@ -21,6 +21,7 @@ namespace Aond {
     public class Viewer: Gtk.DrawingArea {
 
         public signal void hide_controls(bool valor);
+        public signal void player_created(Aond.Player player);
 
         public uint* xid;
         public Aond.Player player;
@@ -46,19 +47,20 @@ namespace Aond {
         private void realize_cb() {
             this.xid = (uint*)Gdk.X11Window.get_xid(this.get_window());
             this.player = new Aond.Player(this.xid);
+            this.player_created(this.player);
         }
 
         private bool motion_cb(Gdk.EventMotion event){
-            Gtk.Allocation alloc;
-            this.get_allocation(out alloc);
+            //Gtk.Allocation alloc;
+            //this.get_allocation(out alloc);
 
-            int x = (int)event.x;
-            int y = (int)event.y;
-            int ww = alloc.width;
-            int hh = alloc.height;
+            //int x = (int)event.x;
+            //int y = (int)event.y;
+            //int ww = alloc.width;
+            //int hh = alloc.height;
 
-            int minw = ww - 60;
-            int minh = hh - 60;
+            //int minw = ww - 60;
+            //int minh = hh - 60;
 
             //if ((x > minw && x < ww) || (y > 0 && y < 60) || (y < hh && y > minh)){
             //    this.hide_controls(false);

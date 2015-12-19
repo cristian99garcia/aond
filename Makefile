@@ -6,6 +6,8 @@ PKG = --pkg gtk+-3.0 \
       --pkg gdk-x11-3.0
 
 SRC = src/aond.vala \
+      src/controls.vala \
+      src/headerbar.vala \
       src/pipelines.vala \
       src/player.vala \
       src/utils.vala \

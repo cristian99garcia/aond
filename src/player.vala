@@ -23,7 +23,7 @@ namespace Aond {
         public signal void endfile();
         public signal void state_changed(Aond.State state);
         public signal void video_changed(bool _value);
-        public signal void position_changed(int64 position);
+        public signal void position_changed(double position);
         public signal void loading_buffer(int position);
 
         private dynamic Gst.Element player = Gst.ElementFactory.make("playbin", "play");
@@ -36,8 +36,8 @@ namespace Aond {
         private bool progressbar = false;
         private bool video = false;
         private uint updater = 0;
-        private int64 duration = 0;
-        private int64 position = 0;
+        private double duration = 0;
+        private double position = 0;
 
         public Player(uint* xid) {
             this.xid = xid;
@@ -142,7 +142,7 @@ namespace Aond {
             }
 
             if (reset == true) {
-                this.updater = GLib.Timeout.add(500, this.handle);
+                this.updater = GLib.Timeout.add(200, this.handle);
             }
         }
 
@@ -155,15 +155,18 @@ namespace Aond {
                 return true;
             }
 
-            int64 duration;
-            int64 position;
-            this.player.query_duration(Gst.Format.TIME, out duration);
-            this.player.query_position(Gst.Format.TIME, out position);
+            int64 d;
+            int64 p;
+            this.player.query_duration(Gst.Format.TIME, out d);
+            this.player.query_position(Gst.Format.TIME, out p);
+
+            double duration = (double)d;
+            double position = (double)p;
 
             duration = duration / Gst.SECOND;
             position = position / Gst.SECOND;
 
-            int64 pos = position * 100 / duration;
+            double pos = position * 100.0 / duration;
             if (this.duration != duration) {
                 this.duration = duration;
             }
@@ -218,7 +221,7 @@ namespace Aond {
             return false;
         }
 
-        public bool set_position(int64 position) {
+        public bool set_position(double position) {
             if (this.progressbar == false) {
                 return false;
             }
@@ -239,8 +242,8 @@ namespace Aond {
             Gst.Event event = new Gst.Event.seek(
                 1.0, Gst.Format.TIME,
                 Gst.SeekFlags.FLUSH | Gst.SeekFlags.ACCURATE,
-                Gst.SeekType.SET, position * 1000000000,
-                Gst.SeekType.NONE, this.duration * 1000000000);
+                Gst.SeekType.SET, (int64)position * 1000000000,
+                Gst.SeekType.NONE, (int64)this.duration * 1000000000);
 
             this.player.send_event(event);
             return true;
